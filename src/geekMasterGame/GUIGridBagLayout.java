@@ -20,17 +20,22 @@ public class GUIGridBagLayout extends JFrame {
     private ImageIcon imageIcon, background;
     private Image image;
     private TitledBorder titledBorder;
+    private Listener listener;
+    private Actions diceActions;
 
+    private GridBagConstraints constraints;
+
+    private ModelGame modelGame;
 
     /**
      * Constructor of GUI class
      */
-    public GUIGridBagLayout(){
+    public GUIGridBagLayout() {
         initGUI();
         //Default JFrame configuration
         this.setTitle("Play Craps");
         this.setUndecorated(true);
-        this.setBackground(new Color(255,255,255,192));
+        this.setBackground(new Color(255, 255, 255, 192));
         this.pack();
         this.setResizable(true);
         this.setVisible(true);
@@ -45,11 +50,14 @@ public class GUIGridBagLayout extends JFrame {
     private void initGUI() {
         //Set up JFrame Container's Layout
         this.getContentPane().setLayout(new GridBagLayout());
-        GridBagConstraints constraints = new GridBagConstraints();
+        constraints = new GridBagConstraints();
         //Set background image
         background = new ImageIcon(getClass().getResource("/resources/fondo.png"));
         image = background.getImage();
         //Create Listener Object and Control Object
+        listener = new Listener();
+        modelGame = new ModelGame();
+        diceActions = new Actions();
         //Set up JComponents
 
         //First row from GridBagLayout
@@ -59,41 +67,49 @@ public class GUIGridBagLayout extends JFrame {
         constraints.gridwidth = 2;
         constraints.fill = GridBagConstraints.BOTH;
         constraints.anchor = GridBagConstraints.CENTER;
-        add(headerProject,constraints);
+        add(headerProject, constraints);
 
         rules = new JButton("                           Rules                           ");
-        powers = new JButton("                           Powers                          ");
+        powers = new JButton("                          Powers                          ");
         constraints.gridx = 0;
         constraints.gridy = 1;
         constraints.gridwidth = 1;
-        constraints.fill= GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.NONE;
         constraints.anchor = GridBagConstraints.LINE_START;
-        add(rules,constraints);
+        add(rules, constraints);
         constraints.anchor = GridBagConstraints.LINE_END;
-        add(powers,constraints);
+        add(powers, constraints);
 
         reset = new JButton("                            Reset                            ");
         exit = new JButton("                            Exit                            ");
+        exit.addActionListener(listener);
         constraints.gridx = 1;
         constraints.gridy = 1;
         constraints.gridwidth = 1;
         constraints.fill = GridBagConstraints.NONE;
         constraints.anchor = GridBagConstraints.LINE_START;
-        add(reset,constraints);
+        add(reset, constraints);
         constraints.anchor = GridBagConstraints.LINE_END;
-        add(exit,constraints);
+        add(exit, constraints);
 
-        imageIcon = new ImageIcon(getClass().getResource("/resources/1.png"));
+        imageIcon = new ImageIcon(getClass().getResource("/resources/Meeple.png"));
         dice1 = new JLabel(imageIcon);
+        dice1.addMouseListener(diceActions);
         dice2 = new JLabel(imageIcon);
+        dice2.addMouseListener(diceActions);
         dice3 = new JLabel(imageIcon);
+        dice3.addMouseListener(diceActions);
         dice4 = new JLabel(imageIcon);
+        dice4.addMouseListener(diceActions);
         dice5 = new JLabel(imageIcon);
+        dice5.addMouseListener(diceActions);
         dice6 = new JLabel(imageIcon);
+        dice6.addMouseListener(diceActions);
         dice7 = new JLabel(imageIcon);
+        dice7.addMouseListener(diceActions);
         panelActive = new PanelImage(image);
-        panelActive.setPreferredSize(new Dimension(500,250) );
-        titledBorder = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.WHITE),"Active Dices: ");
+        panelActive.setPreferredSize(new Dimension(500, 250));
+        titledBorder = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.WHITE), "Active Dices: ");
         titledBorder.setTitleColor(Color.WHITE);
         panelActive.setBorder(titledBorder);
         panelActive.add(dice1);
@@ -108,15 +124,15 @@ public class GUIGridBagLayout extends JFrame {
         constraints.gridwidth = 1;
         constraints.fill = GridBagConstraints.NONE;
         constraints.anchor = GridBagConstraints.CENTER;
-        add(panelActive,constraints);
+        add(panelActive, constraints);
 
-        imageIcon = new ImageIcon(getClass().getResource("/resources/2.png"));
+        imageIcon = new ImageIcon(getClass().getResource("/resources/Dragon.png"));
         dice8 = new JLabel(imageIcon);
         dice9 = new JLabel(imageIcon);
         dice10 = new JLabel(imageIcon);
         panelInactive = new PanelImage(image);
-        panelInactive.setPreferredSize(new Dimension(500,250) );
-        titledBorder = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.WHITE),"Inactive Dices: ");
+        panelInactive.setPreferredSize(new Dimension(500, 250));
+        titledBorder = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.WHITE), "Inactive Dices: ");
         titledBorder.setTitleColor(Color.WHITE);
         panelInactive.setBorder(titledBorder);
         panelInactive.add(dice8);
@@ -127,11 +143,11 @@ public class GUIGridBagLayout extends JFrame {
         constraints.gridwidth = 1;
         constraints.fill = GridBagConstraints.BOTH;
         constraints.anchor = GridBagConstraints.CENTER;
-        add(panelInactive,constraints);
+        add(panelInactive, constraints);
 
         panelUsed = new PanelImage(image);
-        panelUsed.setPreferredSize(new Dimension(500,250) );
-        titledBorder = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.WHITE),"Used Dices: ");
+        panelUsed.setPreferredSize(new Dimension(500, 250));
+        titledBorder = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.WHITE), "Used Dices: ");
         titledBorder.setTitleColor(Color.WHITE);
         panelUsed.setBorder(titledBorder);
         constraints.gridx = 0;
@@ -139,15 +155,27 @@ public class GUIGridBagLayout extends JFrame {
         constraints.gridwidth = 1;
         constraints.fill = GridBagConstraints.BOTH;
         constraints.anchor = GridBagConstraints.CENTER;
-        add(panelUsed,constraints);
+        add(panelUsed, constraints);
+
+        roll = new JButton("Roll");
+        roll.addActionListener(listener);
+        roll.setBackground(Color.RED);
+        roll.setForeground(Color.WHITE);
+        constraints.gridx = 1;
+        constraints.gridy = 3;
+        constraints.gridwidth = 1;
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.anchor = GridBagConstraints.PAGE_START;
+        add(roll, constraints);
     }
 
     /**
      * Main process of the Java program
+     *
      * @param args Object used in order to send input data from command line when
      *             the program is execute by console.
      */
-    public static void main(String[] args){
+    public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
             GUIGridBagLayout miProjectGUI = new GUIGridBagLayout();
         });
@@ -156,7 +184,88 @@ public class GUIGridBagLayout extends JFrame {
     /**
      * inner class that extends an Adapter Class or implements Listeners used by GUI class
      */
-    private class Escucha {
+    private class Listener implements ActionListener {
 
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (e.getSource() == roll) {
+                modelGame.getActiveDices();
+                String[] faces = modelGame.getFaces();
+                imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[0] + ".png"));
+                dice1.setIcon(imageIcon);
+                imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[1] + ".png"));
+                dice2.setIcon(imageIcon);
+                imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[2] + ".png"));
+                dice3.setIcon(imageIcon);
+                imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[3] + ".png"));
+                dice4.setIcon(imageIcon);
+                imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[4] + ".png"));
+                dice5.setIcon(imageIcon);
+                imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[5] + ".png"));
+                dice6.setIcon(imageIcon);
+                imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[6] + ".png"));
+                dice7.setIcon(imageIcon);
+            }
+            else if (e.getSource()==exit){
+                System.exit(0);
+            }
+
+        }
+    }
+
+    private class Actions implements MouseListener {
+
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if (e.getSource() == dice1) {
+                panelActive.remove(dice1);
+                panelUsed.add(dice1);
+            } else if (e.getSource()== dice2) {
+                panelActive.remove(dice2);
+                panelUsed.add(dice2);
+            } else if (e.getSource()== dice3) {
+                panelActive.remove(dice3);
+                panelUsed.add(dice3);
+            } else if (e.getSource()== dice4) {
+                panelActive.remove(dice4);
+                panelUsed.add(dice4);
+            } else if (e.getSource()== dice5) {
+                panelActive.remove(dice5);
+                panelUsed.add(dice5);
+            } else if (e.getSource()== dice6) {
+                panelActive.remove(dice6);
+                panelUsed.add(dice6);
+            } else if (e.getSource()== dice7) {
+                panelActive.remove(dice7);
+                panelUsed.add(dice7);
+            }
+            panelActive.revalidate();
+            panelActive.repaint();
+            panelUsed.revalidate();
+            panelUsed.repaint();
+        }
+
+
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+
+        }
     }
 }

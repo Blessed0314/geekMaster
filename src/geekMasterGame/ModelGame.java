@@ -1,36 +1,38 @@
 package geekMasterGame;
 
+import java.util.Arrays;
+
 public class ModelGame {
-    private DadoGeek dice1, dice2, dice3, dice4, dice5, dice6, dice7, dice8, dice9, dice10;
+    private DadoGeek dice;
     private int launch, point, state, flag;
     private String stateToString;
-    private String[] caras, activeDices, usedDices, inactiveDices;
+    private String[] caras, activeDices, inactiveDices;
+    private int[] flagsInactiveDices;
 
     public ModelGame(){
-        dice1 = new DadoGeek();
-        dice2 = new DadoGeek();
-        dice3 = new DadoGeek();
-        dice4 = new DadoGeek();
-        dice5 = new DadoGeek();
-        dice6 = new DadoGeek();
-        dice7 = new DadoGeek();
-        dice8 = new DadoGeek();
-        dice9 = new DadoGeek();
-        dice10 = new DadoGeek();
-        caras = new String[7];
+        dice = new DadoGeek();
+        caras = new String[10];
+        activeDices = new String [7];
+        inactiveDices = new String [7];
         stateToString = "";
         flag = 0;
+        flagsInactiveDices = new int[]{0,0,0};
+        
     }
 
     public void getActiveDices(){
-        caras[0] = dice1.getCara();
-        caras[1] = dice2.getCara();
-        caras[2] = dice3.getCara();
-        caras[3] = dice4.getCara();
-        caras[4] = dice5.getCara();
-        caras[5] = dice6.getCara();
-        caras[6] = dice7.getCara();
-        activeDices = caras;
+        caras[0] = dice.getCara();
+        caras[1] = dice.getCara();
+        caras[2] = dice.getCara();
+        caras[3] = dice.getCara();
+        caras[4] = dice.getCara();
+        caras[5] = dice.getCara();
+        caras[6] = dice.getCara();
+        caras[7] = dice.getCara();
+        caras[8] = dice.getCara();
+        caras[9] = dice.getCara();
+        activeDices = Arrays.copyOfRange(caras,0,7);
+        inactiveDices = Arrays.copyOfRange(caras,7,10);
     }
 
     public String[] getFaces(){
@@ -51,17 +53,63 @@ public class ModelGame {
         return stateToString;
     }
 
-    public void determineGame (String dice){
-        if (dice == "Meeple") {
-            activeDices = DeleteStringOfArray.delete(activeDices,"Meeple");
-            flag = 1;
-        }
+    public void activeToUsed (String diceGame){
 
+        activeDices = DeleteStringOfArray.delete(activeDices,diceGame);
+        switch (diceGame){
+            case "Meeple":
+                flag = 1;
+                break;
+            case "Heart":
+                flag = 2;
+                break;
+            case "Rocket":
+                flag = 3;
+                break;
+            case "SuperHero":
+                flag = 4;
+                break;
+        }
     }
 
+    public String meeplePower(String diceGame){
+        String newFace = dice.getCara();
+        activeDices = ChangeStringOfArray.changeString(activeDices,diceGame,newFace);
+        return newFace;
+    }
+
+    public String heartPower(String diceGame){
+        String newFace = dice.getCara();
+        activeDices = PushStringToArray.pushString(activeDices,newFace);
+        inactiveDices = DeleteStringOfArray.delete(inactiveDices,diceGame);
+        return newFace;
+    }
     public int getFlag(){
         return flag;
     }
+
+    public int resetFlag(){
+        return flag=0;
+    }
+
+    public int[] getFlagsInactiveDices(){
+        return flagsInactiveDices;
+    }
+
+    public void setFlagsInactiveDices(int inactiveDice){
+        switch (inactiveDice){
+            case 0:
+                 flagsInactiveDices[0]= 1;
+                break;
+            case 1:
+                flagsInactiveDices[1]= 1;
+                break;
+            case 2:
+                flagsInactiveDices[2] = 1;
+                break;
+        }
+    }
+
 
 }
 

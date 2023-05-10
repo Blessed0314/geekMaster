@@ -216,39 +216,58 @@ public class GUIGridBagLayout extends JFrame {
     private class Actions implements MouseListener {
         @Override
         public void mouseClicked(MouseEvent e) {
+
             if (e.getSource() == dice1) {
-                panelActive.remove(dice1);
-                panelUsed.add(dice1);
-                JOptionPane.showMessageDialog(null,modelGame.determineGame(faces[0]));
+                if (modelGame.getFlag()==0){
+                    panelActive.remove(dice1);
+                    panelUsed.add(dice1);
+                    JOptionPane.showMessageDialog(null,modelGame.getStateToString(faces[0]));
+                }
+                modelGame.determineGame(faces[0]);
             } else if (e.getSource()== dice2) {
-                panelActive.remove(dice2);
-                panelUsed.add(dice2);
-                JOptionPane.showMessageDialog(null,modelGame.determineGame(faces[1]));
+                if(modelGame.getFlag()==0){
+                    panelActive.remove(dice2);
+                    panelUsed.add(dice2);
+                    JOptionPane.showMessageDialog(null,modelGame.getStateToString(faces[1]));
+                }
+                modelGame.determineGame(faces[1]);
             } else if (e.getSource()== dice3) {
-                panelActive.remove(dice3);
-                panelUsed.add(dice3);
-                JOptionPane.showMessageDialog(null,modelGame.determineGame(faces[2]));
+                if(modelGame.getFlag()==0){
+                    panelActive.remove(dice3);
+                    panelUsed.add(dice3);
+                    JOptionPane.showMessageDialog(null,modelGame.getStateToString(faces[2]));
+                }
+                modelGame.determineGame(faces[2]);
             } else if (e.getSource()== dice4) {
-                panelActive.remove(dice4);
-                panelUsed.add(dice4);
-                JOptionPane.showMessageDialog(null,modelGame.determineGame(faces[3]));
+                if(modelGame.getFlag()==0){
+                    panelActive.remove(dice4);
+                    panelUsed.add(dice4);
+                    JOptionPane.showMessageDialog(null,modelGame.getStateToString(faces[3]));
+                }
+                modelGame.determineGame(faces[3]);
             } else if (e.getSource()== dice5) {
-                panelActive.remove(dice5);
-                panelUsed.add(dice5);
-                JOptionPane.showMessageDialog(null,modelGame.determineGame(faces[4]));
+                if(modelGame.getFlag()==0){
+                    panelActive.remove(dice5);
+                    panelUsed.add(dice5);
+                    JOptionPane.showMessageDialog(null,modelGame.getStateToString(faces[4]));
+                }
+                modelGame.determineGame(faces[4]);
             } else if (e.getSource()== dice6) {
-                panelActive.remove(dice6);
-                panelUsed.add(dice6);
-                JOptionPane.showMessageDialog(null,modelGame.determineGame(faces[5]));
+                if(modelGame.getFlag()==0){
+                    panelActive.remove(dice6);
+                    panelUsed.add(dice6);
+                    JOptionPane.showMessageDialog(null,modelGame.getStateToString(faces[5]));
+                }
+                modelGame.determineGame(faces[5]);
             } else if (e.getSource()== dice7) {
-                panelActive.remove(dice7);
-                panelUsed.add(dice7);
-                JOptionPane.showMessageDialog(null,modelGame.determineGame(faces[6]));
+                if(modelGame.getFlag()==0){
+                    panelActive.remove(dice7);
+                    panelUsed.add(dice7);
+                    JOptionPane.showMessageDialog(null,modelGame.getStateToString(faces[6]));
+                }
+                modelGame.determineGame(faces[6]);
             }
-            panelActive.revalidate();
-            panelActive.repaint();
-            panelUsed.revalidate();
-            panelUsed.repaint();
+
         }
 
 

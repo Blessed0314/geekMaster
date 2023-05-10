@@ -25,11 +25,11 @@ public class DadoGeek {
                     break;
             case 3: cara = "Heart";
                     break;
-            case 4: cara = "Rocket";
+            case 4: cara = "Point";
                     break;
             case 5: cara = "SuperHero";
                     break;
-            case 6: cara = "Point";
+            case 6: cara = "Rocket";
                     break;
         }
         return cara;

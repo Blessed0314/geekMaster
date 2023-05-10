@@ -4,20 +4,53 @@ import java.util.Arrays;
 
 public class ModelGame {
     private DadoGeek dice;
-    private int launch, point, state, flag;
+    private int point, flag, accumulatedPoints;
     private String stateToString;
     private String[] caras, activeDices, inactiveDices;
     private int[] flagsInactiveDices, flagsUsedDices;
+    private boolean flagPause;
 
     public ModelGame(){
         dice = new DadoGeek();
+
         caras = new String[10];
         activeDices = new String [7];
         inactiveDices = new String [7];
+
         stateToString = "";
+
+        flagPause = true;
         flag = 0;
-        flagsInactiveDices = new int[]{1,1,1,1,1,1,1,0,0,0};
-        flagsUsedDices = new int[]{0,0,0,0,0,0,0,0,0,0};
+        flagsInactiveDices = new int[10];
+        flagsUsedDices = new int[10];
+
+        accumulatedPoints = 0;
+
+    }
+
+    public boolean getStateGame(){
+        int countDragons = RepeatStringInArray.repeatCount(activeDices,"Dragon");
+        int countPoints = RepeatStringInArray.repeatCount(activeDices,"Point");
+        int countSuperHero = RepeatStringInArray.repeatCount(activeDices,"SuperHero");
+        boolean status;
+
+        if ((countPoints + countDragons) == activeDices.length || countDragons == activeDices.length){
+            accumulatedPoints = 0;
+            status = true;
+        } else if (countPoints == activeDices.length) {
+            point = (countPoints * (countPoints + 1)) / 2;
+            accumulatedPoints += point;
+            status = true;
+        } else if (activeDices.length==1 && (activeDices[0]=="Meeple" || activeDices[0]=="Rocket" )) {
+            point = 0;
+            status = true;
+        } else if (countSuperHero == activeDices.length) {
+            point = 0;
+            status = true;
+        }else{
+            status = false;
+        }
+        return status;
     }
 
     public void getActiveDices(){
@@ -33,6 +66,8 @@ public class ModelGame {
         caras[9] = dice.getCara();
         activeDices = Arrays.copyOfRange(caras,0,7);
         inactiveDices = Arrays.copyOfRange(caras,7,10);
+        flagsUsedDices = new int[]{0,0,0,0,0,0,0,0,0,0};
+        flagsInactiveDices = new int[]{1,1,1,1,1,1,1,0,0,0};
     }
 
     public String[] getFaces(){
@@ -149,7 +184,16 @@ public class ModelGame {
         flagsUsedDices[activeDice]=1;
     }
 
-
+    public boolean getFlagPause (){
+        return flagPause;
+    }
+    public void setFlagPause (){
+        if(flagPause){
+            flagPause = false;
+        }else{
+            flagPause = true;
+        }
+    }
 }
 
 

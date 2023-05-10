@@ -7,7 +7,7 @@ public class ModelGame {
     private int launch, point, state, flag;
     private String stateToString;
     private String[] caras, activeDices, inactiveDices;
-    private int[] flagsInactiveDices;
+    private int[] flagsInactiveDices, flagsUsedDices;
 
     public ModelGame(){
         dice = new DadoGeek();
@@ -16,8 +16,8 @@ public class ModelGame {
         inactiveDices = new String [7];
         stateToString = "";
         flag = 0;
-        flagsInactiveDices = new int[]{0,0,0};
-        
+        flagsInactiveDices = new int[]{1,1,1,1,1,1,1,0,0,0};
+        flagsUsedDices = new int[]{0,0,0,0,0,0,0,0,0,0};
     }
 
     public void getActiveDices(){
@@ -84,6 +84,42 @@ public class ModelGame {
         inactiveDices = DeleteStringOfArray.delete(inactiveDices,diceGame);
         return newFace;
     }
+
+    public void rocketPower(String diceGame){
+        activeDices = DeleteStringOfArray.delete(activeDices,diceGame);
+        inactiveDices = PushStringToArray.pushString(inactiveDices,diceGame);
+    }
+
+    public String superHeroPower (String diceGame){
+        String result = "";
+        switch (diceGame){
+            case "Meeple":
+                activeDices = ChangeStringOfArray.changeString(activeDices,diceGame,"Rocket");
+                result = "Rocket";
+                break;
+            case "Heart":
+                activeDices = ChangeStringOfArray.changeString(activeDices,diceGame,"Point");
+                result = "Point";
+                break;
+            case "Rocket":
+                activeDices = ChangeStringOfArray.changeString(activeDices,diceGame,"Meeple");
+                result = "Meeple";
+                break;
+            case "Point":
+                activeDices = ChangeStringOfArray.changeString(activeDices,diceGame,"Heart");
+                result = "Heart";
+                break;
+            case "Dragon":
+                activeDices = ChangeStringOfArray.changeString(activeDices,diceGame,"SuperHero");
+                result = "SuperHero";
+                break;
+            case "SuperHero":
+                result = "No se puede girar otro superHero, escoge otro dado";
+                break;
+        }
+        return result;
+    }
+
     public int getFlag(){
         return flag;
     }
@@ -97,17 +133,20 @@ public class ModelGame {
     }
 
     public void setFlagsInactiveDices(int inactiveDice){
-        switch (inactiveDice){
-            case 0:
-                 flagsInactiveDices[0]= 1;
-                break;
-            case 1:
-                flagsInactiveDices[1]= 1;
-                break;
-            case 2:
-                flagsInactiveDices[2] = 1;
-                break;
+        if (flagsInactiveDices[inactiveDice]==0){
+            flagsInactiveDices[inactiveDice] = 1;
+        }else{
+            flagsInactiveDices[inactiveDice] = 0;
         }
+
+    }
+
+    public int[] getFlagsUsedDices(){
+        return flagsUsedDices;
+    }
+
+    public void setFlagsUsedDices(int activeDice){
+        flagsUsedDices[activeDice]=1;
     }
 
 

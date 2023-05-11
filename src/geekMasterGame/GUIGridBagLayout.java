@@ -15,8 +15,8 @@ public class GUIGridBagLayout extends JFrame {
     private PanelImage panelImage;
     private Header headerProject;
     private JPanel panelActive, panelInactive, panelUsed;
-    private JLabel dice1, dice2, dice3, dice4, dice5, dice6, dice7, dice8, dice9, dice10;
-    private JButton roll, rules, reset, exit, powers, newRound;
+    private JLabel dice1, dice2, dice3, dice4, dice5, dice6, dice7, dice8, dice9, dice10, powerRules, viewRules, getPoints;
+    private JButton roll, rules, points, exit, powers, newRound;
     private ImageIcon imageIcon, background;
     private Image image;
     private TitledBorder titledBorder;
@@ -26,6 +26,7 @@ public class GUIGridBagLayout extends JFrame {
     private GridBagConstraints constraints;
     private JTextArea stateGame;
     private ModelGame modelGame;
+
 
     /**
      * Constructor of GUI class
@@ -70,7 +71,9 @@ public class GUIGridBagLayout extends JFrame {
         add(headerProject, constraints);
 
         rules = new JButton("                           Rules                           ");
+        rules.addActionListener(listener);
         powers = new JButton("                          Powers                          ");
+        powers.addActionListener(listener);
         constraints.gridx = 0;
         constraints.gridy = 1;
         constraints.gridwidth = 1;
@@ -80,7 +83,8 @@ public class GUIGridBagLayout extends JFrame {
         constraints.anchor = GridBagConstraints.LINE_END;
         add(powers, constraints);
 
-        reset = new JButton("                            Reset                            ");
+        points = new JButton("                   How get points                      ");
+        points.addActionListener(listener);
         exit = new JButton("                            Exit                            ");
         exit.addActionListener(listener);
         constraints.gridx = 1;
@@ -88,7 +92,7 @@ public class GUIGridBagLayout extends JFrame {
         constraints.gridwidth = 1;
         constraints.fill = GridBagConstraints.NONE;
         constraints.anchor = GridBagConstraints.LINE_START;
-        add(reset, constraints);
+        add(points, constraints);
         constraints.anchor = GridBagConstraints.LINE_END;
         add(exit, constraints);
 
@@ -182,6 +186,7 @@ public class GUIGridBagLayout extends JFrame {
         constraints.anchor = GridBagConstraints.EAST;
         add(stateGame, constraints);
 
+
     }
 
     /**
@@ -267,6 +272,21 @@ public class GUIGridBagLayout extends JFrame {
                 modelGame.setFlagPause();
                 roll.setEnabled(true);
                 newRound.setEnabled(false);
+            } else if (e.getSource()==powers) {
+                imageIcon = new ImageIcon(getClass().getResource("/resources/Powers.png"));
+                powerRules = new JLabel();
+                powerRules.setIcon(imageIcon);
+                JOptionPane.showMessageDialog(null,powerRules,"Power Rules: ",JOptionPane.INFORMATION_MESSAGE);
+            } else if (e.getSource()==rules) {
+                imageIcon = new ImageIcon(getClass().getResource("/resources/Rules1.png"));
+                viewRules = new JLabel();
+                viewRules.setIcon(imageIcon);
+                JOptionPane.showMessageDialog(null,viewRules,"Rules of game: ",JOptionPane.INFORMATION_MESSAGE);
+            } else if (e.getSource()==points) {
+                imageIcon = new ImageIcon(getClass().getResource("/resources/Rules2.png"));
+                getPoints = new JLabel();
+                getPoints.setIcon(imageIcon);
+                JOptionPane.showMessageDialog(null,getPoints,"How get points: ",JOptionPane.INFORMATION_MESSAGE);
             }
         }
     }
@@ -274,386 +294,394 @@ public class GUIGridBagLayout extends JFrame {
     private class Actions implements MouseListener {
         @Override
         public void mouseClicked(MouseEvent e) {
-            if (modelGame.getFlagPause()==false){
-                if (e.getSource() == dice1 && modelGame.getFlagsUsedDices()[0]==0) {
-                    if (modelGame.getFlag()==0 && modelGame.getFlagsInactiveDices()[0]==1 && faces[0] != "Dragon" && faces[0] != "Point" ){
-                        panelActive.remove(dice1);
-                        panelUsed.add(dice1);
-                        JOptionPane.showMessageDialog(null,modelGame.getStateToString(faces[0]));
-                        modelGame.activeToUsed(faces[0]);
-                        modelGame.setFlagsUsedDices(0);
-                    }else if (modelGame.getFlag()==1 && modelGame.getFlagsInactiveDices()[0]==1) {
-                        faces[0] = modelGame.meeplePower(faces[0]);
-                        imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[0] + ".png"));
-                        dice1.setIcon(imageIcon);
-                        modelGame.resetFlag();
-                    } else if (modelGame.getFlag()==3 && modelGame.getFlagsInactiveDices()[0]==1) {
-                        modelGame.rocketPower(faces[0]);
-                        panelActive.remove(dice1);
-                        panelInactive.add(dice1);
-                        modelGame.setFlagsInactiveDices(0);
-                        modelGame.resetFlag();
-                    } else if(modelGame.getFlag()==2){
-                        panelInactive.remove(dice1);
-                        faces[0] = modelGame.heartPower(faces[0]);
-                        imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[0] + ".png"));
-                        dice1.setIcon(imageIcon);
-                        panelActive.add(dice1);
-                        modelGame.setFlagsInactiveDices(0);
-                        modelGame.resetFlag();
-                    } else if (modelGame.getFlag()==4 && modelGame.getFlagsInactiveDices()[0]==1) {
-                        if (modelGame.superHeroPower(faces[0]).length()>=10 ){
-                            JOptionPane.showMessageDialog(null,modelGame.superHeroPower(faces[0]));
-                        }else{
-                            faces[0] = modelGame.superHeroPower(faces[0]);
+            if (modelGame.getStatusRound()==true){
+                JOptionPane.showMessageDialog(null,modelGame.validateGame());
+            }else{
+                if (modelGame.getFlagPause()==false){
+                    if (e.getSource() == dice1 && modelGame.getFlagsUsedDices()[0]==0) {
+                        if (modelGame.getFlag()==0 && modelGame.getFlagsInactiveDices()[0]==1 && faces[0] != "Dragon" && faces[0] != "Point" ){
+                            panelActive.remove(dice1);
+                            panelUsed.add(dice1);
+                            JOptionPane.showMessageDialog(null,modelGame.getStateToString(faces[0]));
+                            modelGame.activeToUsed(faces[0]);
+                            modelGame.setFlagsUsedDices(0);
+                        }else if (modelGame.getFlag()==1 && modelGame.getFlagsInactiveDices()[0]==1) {
+                            faces[0] = modelGame.meeplePower(faces[0]);
                             imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[0] + ".png"));
                             dice1.setIcon(imageIcon);
                             modelGame.resetFlag();
+                        } else if (modelGame.getFlag()==3 && modelGame.getFlagsInactiveDices()[0]==1) {
+                            modelGame.rocketPower(faces[0]);
+                            panelActive.remove(dice1);
+                            panelInactive.add(dice1);
+                            modelGame.setFlagsInactiveDices(0);
+                            modelGame.resetFlag();
+                        } else if(modelGame.getFlag()==2){
+                            panelInactive.remove(dice1);
+                            faces[0] = modelGame.heartPower(faces[0]);
+                            imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[0] + ".png"));
+                            dice1.setIcon(imageIcon);
+                            panelActive.add(dice1);
+                            modelGame.setFlagsInactiveDices(0);
+                            modelGame.resetFlag();
+                        } else if (modelGame.getFlag()==4 && modelGame.getFlagsInactiveDices()[0]==1) {
+                            if (modelGame.superHeroPower(faces[0]).length()>=10 ){
+                                JOptionPane.showMessageDialog(null,modelGame.superHeroPower(faces[0]));
+                            }else{
+                                faces[0] = modelGame.superHeroPower(faces[0]);
+                                imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[0] + ".png"));
+                                dice1.setIcon(imageIcon);
+                                modelGame.resetFlag();
+                            }
                         }
-                    }
 
-                } else if (e.getSource()== dice2 && modelGame.getFlagsUsedDices()[1]==0) {
-                    if(modelGame.getFlag()==0 && modelGame.getFlagsInactiveDices()[1]==1 && faces[1] != "Dragon" && faces[1] != "Point"){
-                        panelActive.remove(dice2);
-                        panelUsed.add(dice2);
-                        JOptionPane.showMessageDialog(null,modelGame.getStateToString(faces[1]));
-                        modelGame.activeToUsed(faces[1]);
-                        modelGame.setFlagsUsedDices(1);
-                    }else if (modelGame.getFlag()==1 && modelGame.getFlagsInactiveDices()[1]==1){
-                        faces[1] = modelGame.meeplePower(faces[1]);
-                        imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[1] + ".png"));
-                        dice2.setIcon(imageIcon);
-                        modelGame.resetFlag();
-                    }else if (modelGame.getFlag()==3 && modelGame.getFlagsInactiveDices()[1]==1) {
-                        modelGame.rocketPower(faces[1]);
-                        panelActive.remove(dice2);
-                        panelInactive.add(dice2);
-                        modelGame.setFlagsInactiveDices(1);
-                        modelGame.resetFlag();
-                    }else if(modelGame.getFlag()==2){
-                        panelInactive.remove(dice2);
-                        faces[1] = modelGame.heartPower(faces[1]);
-                        imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[1] + ".png"));
-                        dice2.setIcon(imageIcon);
-                        panelActive.add(dice2);
-                        modelGame.setFlagsInactiveDices(1);
-                        modelGame.resetFlag();
-                    }else if (modelGame.getFlag()==4 && modelGame.getFlagsInactiveDices()[1]==1) {
-                        if (modelGame.superHeroPower(faces[1]).length()>=10 ){
-                            JOptionPane.showMessageDialog(null,modelGame.superHeroPower(faces[1]));
-                        }else{
-                            faces[1] = modelGame.superHeroPower(faces[1]);
+                    } else if (e.getSource()== dice2 && modelGame.getFlagsUsedDices()[1]==0) {
+                        if(modelGame.getFlag()==0 && modelGame.getFlagsInactiveDices()[1]==1 && faces[1] != "Dragon" && faces[1] != "Point"){
+                            panelActive.remove(dice2);
+                            panelUsed.add(dice2);
+                            JOptionPane.showMessageDialog(null,modelGame.getStateToString(faces[1]));
+                            modelGame.activeToUsed(faces[1]);
+                            modelGame.setFlagsUsedDices(1);
+                        }else if (modelGame.getFlag()==1 && modelGame.getFlagsInactiveDices()[1]==1){
+                            faces[1] = modelGame.meeplePower(faces[1]);
                             imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[1] + ".png"));
                             dice2.setIcon(imageIcon);
                             modelGame.resetFlag();
+                        }else if (modelGame.getFlag()==3 && modelGame.getFlagsInactiveDices()[1]==1) {
+                            modelGame.rocketPower(faces[1]);
+                            panelActive.remove(dice2);
+                            panelInactive.add(dice2);
+                            modelGame.setFlagsInactiveDices(1);
+                            modelGame.resetFlag();
+                        }else if(modelGame.getFlag()==2){
+                            panelInactive.remove(dice2);
+                            faces[1] = modelGame.heartPower(faces[1]);
+                            imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[1] + ".png"));
+                            dice2.setIcon(imageIcon);
+                            panelActive.add(dice2);
+                            modelGame.setFlagsInactiveDices(1);
+                            modelGame.resetFlag();
+                        }else if (modelGame.getFlag()==4 && modelGame.getFlagsInactiveDices()[1]==1) {
+                            if (modelGame.superHeroPower(faces[1]).length()>=10 ){
+                                JOptionPane.showMessageDialog(null,modelGame.superHeroPower(faces[1]));
+                            }else{
+                                faces[1] = modelGame.superHeroPower(faces[1]);
+                                imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[1] + ".png"));
+                                dice2.setIcon(imageIcon);
+                                modelGame.resetFlag();
+                            }
                         }
-                    }
 
-                } else if (e.getSource()== dice3 && modelGame.getFlagsUsedDices()[2]==0) {
-                    if(modelGame.getFlag()==0 && modelGame.getFlagsInactiveDices()[2]==1 && faces[2] != "Dragon" && faces[2] != "Point"){
-                        panelActive.remove(dice3);
-                        panelUsed.add(dice3);
-                        JOptionPane.showMessageDialog(null,modelGame.getStateToString(faces[2]));
-                        modelGame.activeToUsed(faces[2]);
-                        modelGame.setFlagsUsedDices(2);
-                    }else if (modelGame.getFlag()==1 && modelGame.getFlagsInactiveDices()[2]==1){
-                        faces[2] = modelGame.meeplePower(faces[2]);
-                        imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[2] + ".png"));
-                        dice3.setIcon(imageIcon);
-                        modelGame.resetFlag();
-                    }else if (modelGame.getFlag()==3 && modelGame.getFlagsInactiveDices()[2]==1) {
-                        modelGame.rocketPower(faces[2]);
-                        panelActive.remove(dice3);
-                        panelInactive.add(dice3);
-                        modelGame.setFlagsInactiveDices(2);
-                        modelGame.resetFlag();
-                    }else if(modelGame.getFlag()==2){
-                        panelInactive.remove(dice3);
-                        faces[2] = modelGame.heartPower(faces[2]);
-                        imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[2] + ".png"));
-                        dice3.setIcon(imageIcon);
-                        panelActive.add(dice3);
-                        modelGame.setFlagsInactiveDices(2);
-                        modelGame.resetFlag();
-                    }else if (modelGame.getFlag()==4 && modelGame.getFlagsInactiveDices()[2]==1) {
-                        if (modelGame.superHeroPower(faces[2]).length()>=10 ){
-                            JOptionPane.showMessageDialog(null,modelGame.superHeroPower(faces[2]));
-                        }else{
-                            faces[2] = modelGame.superHeroPower(faces[2]);
+                    } else if (e.getSource()== dice3 && modelGame.getFlagsUsedDices()[2]==0) {
+                        if(modelGame.getFlag()==0 && modelGame.getFlagsInactiveDices()[2]==1 && faces[2] != "Dragon" && faces[2] != "Point"){
+                            panelActive.remove(dice3);
+                            panelUsed.add(dice3);
+                            JOptionPane.showMessageDialog(null,modelGame.getStateToString(faces[2]));
+                            modelGame.activeToUsed(faces[2]);
+                            modelGame.setFlagsUsedDices(2);
+                        }else if (modelGame.getFlag()==1 && modelGame.getFlagsInactiveDices()[2]==1){
+                            faces[2] = modelGame.meeplePower(faces[2]);
                             imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[2] + ".png"));
                             dice3.setIcon(imageIcon);
                             modelGame.resetFlag();
+                        }else if (modelGame.getFlag()==3 && modelGame.getFlagsInactiveDices()[2]==1) {
+                            modelGame.rocketPower(faces[2]);
+                            panelActive.remove(dice3);
+                            panelInactive.add(dice3);
+                            modelGame.setFlagsInactiveDices(2);
+                            modelGame.resetFlag();
+                        }else if(modelGame.getFlag()==2){
+                            panelInactive.remove(dice3);
+                            faces[2] = modelGame.heartPower(faces[2]);
+                            imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[2] + ".png"));
+                            dice3.setIcon(imageIcon);
+                            panelActive.add(dice3);
+                            modelGame.setFlagsInactiveDices(2);
+                            modelGame.resetFlag();
+                        }else if (modelGame.getFlag()==4 && modelGame.getFlagsInactiveDices()[2]==1) {
+                            if (modelGame.superHeroPower(faces[2]).length()>=10 ){
+                                JOptionPane.showMessageDialog(null,modelGame.superHeroPower(faces[2]));
+                            }else{
+                                faces[2] = modelGame.superHeroPower(faces[2]);
+                                imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[2] + ".png"));
+                                dice3.setIcon(imageIcon);
+                                modelGame.resetFlag();
+                            }
                         }
-                    }
 
-                } else if (e.getSource()== dice4 && modelGame.getFlagsUsedDices()[3]==0) {
-                    if(modelGame.getFlag()==0 && modelGame.getFlagsInactiveDices()[3]==1 && faces[3] != "Dragon" && faces[3] != "Point"){
-                        panelActive.remove(dice4);
-                        panelUsed.add(dice4);
-                        JOptionPane.showMessageDialog(null,modelGame.getStateToString(faces[3]));
-                        modelGame.activeToUsed(faces[3]);
-                        modelGame.setFlagsUsedDices(3);
-                    }else if (modelGame.getFlag()==1 && modelGame.getFlagsInactiveDices()[3]==1){
-                        faces[3] = modelGame.meeplePower(faces[3]);
-                        imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[3] + ".png"));
-                        dice4.setIcon(imageIcon);
-                        modelGame.resetFlag();
-                    }else if (modelGame.getFlag()==3 && modelGame.getFlagsInactiveDices()[3]==1) {
-                        modelGame.rocketPower(faces[3]);
-                        panelActive.remove(dice4);
-                        panelInactive.add(dice4);
-                        modelGame.setFlagsInactiveDices(3);
-                        modelGame.resetFlag();
-                    }else if(modelGame.getFlag()==2){
-                        panelInactive.remove(dice4);
-                        faces[3] = modelGame.heartPower(faces[3]);
-                        imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[3] + ".png"));
-                        dice4.setIcon(imageIcon);
-                        panelActive.add(dice4);
-                        modelGame.setFlagsInactiveDices(3);
-                        modelGame.resetFlag();
-                    }else if (modelGame.getFlag()==4 && modelGame.getFlagsInactiveDices()[3]==1) {
-                        if (modelGame.superHeroPower(faces[3]).length()>=10 ){
-                            JOptionPane.showMessageDialog(null,modelGame.superHeroPower(faces[3]));
-                        }else{
-                            faces[3] = modelGame.superHeroPower(faces[3]);
+                    } else if (e.getSource()== dice4 && modelGame.getFlagsUsedDices()[3]==0) {
+                        if(modelGame.getFlag()==0 && modelGame.getFlagsInactiveDices()[3]==1 && faces[3] != "Dragon" && faces[3] != "Point"){
+                            panelActive.remove(dice4);
+                            panelUsed.add(dice4);
+                            JOptionPane.showMessageDialog(null,modelGame.getStateToString(faces[3]));
+                            modelGame.activeToUsed(faces[3]);
+                            modelGame.setFlagsUsedDices(3);
+                        }else if (modelGame.getFlag()==1 && modelGame.getFlagsInactiveDices()[3]==1){
+                            faces[3] = modelGame.meeplePower(faces[3]);
                             imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[3] + ".png"));
                             dice4.setIcon(imageIcon);
                             modelGame.resetFlag();
+                        }else if (modelGame.getFlag()==3 && modelGame.getFlagsInactiveDices()[3]==1) {
+                            modelGame.rocketPower(faces[3]);
+                            panelActive.remove(dice4);
+                            panelInactive.add(dice4);
+                            modelGame.setFlagsInactiveDices(3);
+                            modelGame.resetFlag();
+                        }else if(modelGame.getFlag()==2){
+                            panelInactive.remove(dice4);
+                            faces[3] = modelGame.heartPower(faces[3]);
+                            imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[3] + ".png"));
+                            dice4.setIcon(imageIcon);
+                            panelActive.add(dice4);
+                            modelGame.setFlagsInactiveDices(3);
+                            modelGame.resetFlag();
+                        }else if (modelGame.getFlag()==4 && modelGame.getFlagsInactiveDices()[3]==1) {
+                            if (modelGame.superHeroPower(faces[3]).length()>=10 ){
+                                JOptionPane.showMessageDialog(null,modelGame.superHeroPower(faces[3]));
+                            }else{
+                                faces[3] = modelGame.superHeroPower(faces[3]);
+                                imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[3] + ".png"));
+                                dice4.setIcon(imageIcon);
+                                modelGame.resetFlag();
+                            }
                         }
-                    }
 
-                } else if (e.getSource()== dice5 && modelGame.getFlagsUsedDices()[4]==0) {
-                    if(modelGame.getFlag()==0 && modelGame.getFlagsInactiveDices()[4]==1 && faces[4] != "Dragon" && faces[4] != "Point"){
-                        panelActive.remove(dice5);
-                        panelUsed.add(dice5);
-                        JOptionPane.showMessageDialog(null,modelGame.getStateToString(faces[4]));
-                        modelGame.activeToUsed(faces[4]);
-                        modelGame.setFlagsUsedDices(4);
-                    }else if (modelGame.getFlag()==1 && modelGame.getFlagsInactiveDices()[4]==1){
-                        faces[4] = modelGame.meeplePower(faces[4]);
-                        imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[4] + ".png" ));
-                        dice5.setIcon(imageIcon);
-                        modelGame.resetFlag();
-                    }else if (modelGame.getFlag()==3 && modelGame.getFlagsInactiveDices()[4]==1) {
-                        modelGame.rocketPower(faces[4]);
-                        panelActive.remove(dice5);
-                        panelInactive.add(dice5);
-                        modelGame.setFlagsInactiveDices(4);
-                        modelGame.resetFlag();
-                    }else if(modelGame.getFlag()==2){
-                        panelInactive.remove(dice5);
-                        faces[4] = modelGame.heartPower(faces[4]);
-                        imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[4] + ".png"));
-                        dice5.setIcon(imageIcon);
-                        panelActive.add(dice5);
-                        modelGame.setFlagsInactiveDices(4);
-                        modelGame.resetFlag();
-                    }else if (modelGame.getFlag()==4 && modelGame.getFlagsInactiveDices()[4]==1) {
-                        if (modelGame.superHeroPower(faces[4]).length()>=10 ){
-                            JOptionPane.showMessageDialog(null,modelGame.superHeroPower(faces[4]));
-                        }else{
-                            faces[4] = modelGame.superHeroPower(faces[4]);
-                            imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[4] + ".png"));
+                    } else if (e.getSource()== dice5 && modelGame.getFlagsUsedDices()[4]==0) {
+                        if(modelGame.getFlag()==0 && modelGame.getFlagsInactiveDices()[4]==1 && faces[4] != "Dragon" && faces[4] != "Point"){
+                            panelActive.remove(dice5);
+                            panelUsed.add(dice5);
+                            JOptionPane.showMessageDialog(null,modelGame.getStateToString(faces[4]));
+                            modelGame.activeToUsed(faces[4]);
+                            modelGame.setFlagsUsedDices(4);
+                        }else if (modelGame.getFlag()==1 && modelGame.getFlagsInactiveDices()[4]==1){
+                            faces[4] = modelGame.meeplePower(faces[4]);
+                            imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[4] + ".png" ));
                             dice5.setIcon(imageIcon);
                             modelGame.resetFlag();
+                        }else if (modelGame.getFlag()==3 && modelGame.getFlagsInactiveDices()[4]==1) {
+                            modelGame.rocketPower(faces[4]);
+                            panelActive.remove(dice5);
+                            panelInactive.add(dice5);
+                            modelGame.setFlagsInactiveDices(4);
+                            modelGame.resetFlag();
+                        }else if(modelGame.getFlag()==2){
+                            panelInactive.remove(dice5);
+                            faces[4] = modelGame.heartPower(faces[4]);
+                            imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[4] + ".png"));
+                            dice5.setIcon(imageIcon);
+                            panelActive.add(dice5);
+                            modelGame.setFlagsInactiveDices(4);
+                            modelGame.resetFlag();
+                        }else if (modelGame.getFlag()==4 && modelGame.getFlagsInactiveDices()[4]==1) {
+                            if (modelGame.superHeroPower(faces[4]).length()>=10 ){
+                                JOptionPane.showMessageDialog(null,modelGame.superHeroPower(faces[4]));
+                            }else{
+                                faces[4] = modelGame.superHeroPower(faces[4]);
+                                imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[4] + ".png"));
+                                dice5.setIcon(imageIcon);
+                                modelGame.resetFlag();
+                            }
                         }
-                    }
 
-                } else if (e.getSource()== dice6 && modelGame.getFlagsUsedDices()[5]==0) {
-                    if(modelGame.getFlag()==0 && modelGame.getFlagsInactiveDices()[5]==1 && faces[5] != "Dragon" && faces[5] != "Point"){
-                        panelActive.remove(dice6);
-                        panelUsed.add(dice6);
-                        JOptionPane.showMessageDialog(null,modelGame.getStateToString(faces[5]));
-                        modelGame.activeToUsed(faces[5]);
-                        modelGame.setFlagsUsedDices(5);
-                    }else if (modelGame.getFlag()==1 && modelGame.getFlagsInactiveDices()[5]==1){
-                        faces[5] = modelGame.meeplePower(faces[5]);
-                        imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[5] + ".png"));
-                        dice6.setIcon(imageIcon);
-                        modelGame.resetFlag();
-                    }else if (modelGame.getFlag()==3 && modelGame.getFlagsInactiveDices()[5]==1) {
-                        modelGame.rocketPower(faces[5]);
-                        panelActive.remove(dice6);
-                        panelInactive.add(dice6);
-                        modelGame.setFlagsInactiveDices(5);
-                        modelGame.resetFlag();
-                    }else if(modelGame.getFlag()==2){
-                        panelInactive.remove(dice6);
-                        faces[5] = modelGame.heartPower(faces[5]);
-                        imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[5] + ".png"));
-                        dice6.setIcon(imageIcon);
-                        panelActive.add(dice6);
-                        modelGame.setFlagsInactiveDices(5);
-                        modelGame.resetFlag();
-                    }else if (modelGame.getFlag()==4 && modelGame.getFlagsInactiveDices()[5]==1) {
-                        if (modelGame.superHeroPower(faces[5]).length()>=10 ){
-                            JOptionPane.showMessageDialog(null,modelGame.superHeroPower(faces[5]));
-                        }else{
-                            faces[5] = modelGame.superHeroPower(faces[5]);
+                    } else if (e.getSource()== dice6 && modelGame.getFlagsUsedDices()[5]==0) {
+                        if(modelGame.getFlag()==0 && modelGame.getFlagsInactiveDices()[5]==1 && faces[5] != "Dragon" && faces[5] != "Point"){
+                            panelActive.remove(dice6);
+                            panelUsed.add(dice6);
+                            JOptionPane.showMessageDialog(null,modelGame.getStateToString(faces[5]));
+                            modelGame.activeToUsed(faces[5]);
+                            modelGame.setFlagsUsedDices(5);
+                        }else if (modelGame.getFlag()==1 && modelGame.getFlagsInactiveDices()[5]==1){
+                            faces[5] = modelGame.meeplePower(faces[5]);
                             imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[5] + ".png"));
                             dice6.setIcon(imageIcon);
                             modelGame.resetFlag();
+                        }else if (modelGame.getFlag()==3 && modelGame.getFlagsInactiveDices()[5]==1) {
+                            modelGame.rocketPower(faces[5]);
+                            panelActive.remove(dice6);
+                            panelInactive.add(dice6);
+                            modelGame.setFlagsInactiveDices(5);
+                            modelGame.resetFlag();
+                        }else if(modelGame.getFlag()==2){
+                            panelInactive.remove(dice6);
+                            faces[5] = modelGame.heartPower(faces[5]);
+                            imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[5] + ".png"));
+                            dice6.setIcon(imageIcon);
+                            panelActive.add(dice6);
+                            modelGame.setFlagsInactiveDices(5);
+                            modelGame.resetFlag();
+                        }else if (modelGame.getFlag()==4 && modelGame.getFlagsInactiveDices()[5]==1) {
+                            if (modelGame.superHeroPower(faces[5]).length()>=10 ){
+                                JOptionPane.showMessageDialog(null,modelGame.superHeroPower(faces[5]));
+                            }else{
+                                faces[5] = modelGame.superHeroPower(faces[5]);
+                                imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[5] + ".png"));
+                                dice6.setIcon(imageIcon);
+                                modelGame.resetFlag();
+                            }
                         }
-                    }
 
-                } else if (e.getSource()== dice7 && modelGame.getFlagsUsedDices()[6]==0) {
-                    if(modelGame.getFlag()==0 &&  modelGame.getFlagsInactiveDices()[6]==1 && faces[6] != "Dragon" && faces[6] != "Point"){
-                        panelActive.remove(dice7);
-                        panelUsed.add(dice7);
-                        JOptionPane.showMessageDialog(null,modelGame.getStateToString(faces[6]));
-                        modelGame.activeToUsed(faces[6]);
-                        modelGame.setFlagsUsedDices(6);
-                    }else if (modelGame.getFlag()==1 && modelGame.getFlagsInactiveDices()[6]==1){
-                        faces[6] = modelGame.meeplePower(faces[6]);
-                        imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[6] + ".png"));
-                        dice7.setIcon(imageIcon);
-                        modelGame.resetFlag();
-                    }else if (modelGame.getFlag()==3 && modelGame.getFlagsInactiveDices()[6]==1) {
-                        modelGame.rocketPower(faces[6]);
-                        panelActive.remove(dice7);
-                        panelInactive.add(dice7);
-                        modelGame.setFlagsInactiveDices(6);
-                        modelGame.resetFlag();
-                    }else if(modelGame.getFlag()==2){
-                        panelInactive.remove(dice7);
-                        faces[6] = modelGame.heartPower(faces[6]);
-                        imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[6] + ".png"));
-                        dice7.setIcon(imageIcon);
-                        panelActive.add(dice7);
-                        modelGame.setFlagsInactiveDices(6);
-                        modelGame.resetFlag();
-                    }else if (modelGame.getFlag()==4 && modelGame.getFlagsInactiveDices()[6]==1) {
-                        if (modelGame.superHeroPower(faces[6]).length()>=10 ){
-                            JOptionPane.showMessageDialog(null,modelGame.superHeroPower(faces[6]));
-                        }else{
-                            faces[6] = modelGame.superHeroPower(faces[6]);
+                    } else if (e.getSource()== dice7 && modelGame.getFlagsUsedDices()[6]==0) {
+                        if(modelGame.getFlag()==0 &&  modelGame.getFlagsInactiveDices()[6]==1 && faces[6] != "Dragon" && faces[6] != "Point"){
+                            panelActive.remove(dice7);
+                            panelUsed.add(dice7);
+                            JOptionPane.showMessageDialog(null,modelGame.getStateToString(faces[6]));
+                            modelGame.activeToUsed(faces[6]);
+                            modelGame.setFlagsUsedDices(6);
+                        }else if (modelGame.getFlag()==1 && modelGame.getFlagsInactiveDices()[6]==1){
+                            faces[6] = modelGame.meeplePower(faces[6]);
                             imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[6] + ".png"));
                             dice7.setIcon(imageIcon);
                             modelGame.resetFlag();
+                        }else if (modelGame.getFlag()==3 && modelGame.getFlagsInactiveDices()[6]==1) {
+                            modelGame.rocketPower(faces[6]);
+                            panelActive.remove(dice7);
+                            panelInactive.add(dice7);
+                            modelGame.setFlagsInactiveDices(6);
+                            modelGame.resetFlag();
+                        }else if(modelGame.getFlag()==2){
+                            panelInactive.remove(dice7);
+                            faces[6] = modelGame.heartPower(faces[6]);
+                            imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[6] + ".png"));
+                            dice7.setIcon(imageIcon);
+                            panelActive.add(dice7);
+                            modelGame.setFlagsInactiveDices(6);
+                            modelGame.resetFlag();
+                        }else if (modelGame.getFlag()==4 && modelGame.getFlagsInactiveDices()[6]==1) {
+                            if (modelGame.superHeroPower(faces[6]).length()>=10 ){
+                                JOptionPane.showMessageDialog(null,modelGame.superHeroPower(faces[6]));
+                            }else{
+                                faces[6] = modelGame.superHeroPower(faces[6]);
+                                imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[6] + ".png"));
+                                dice7.setIcon(imageIcon);
+                                modelGame.resetFlag();
+                            }
                         }
-                    }
 
-                } else if (e.getSource()== dice8 && modelGame.getFlagsUsedDices()[7]==0){
-                    if(modelGame.getFlag()==2){
-                        panelInactive.remove(dice8);
-                        faces[7] = modelGame.heartPower(faces[7]);
-                        imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[7] + ".png"));
-                        dice8.setIcon(imageIcon);
-                        panelActive.add(dice8);
-                        modelGame.setFlagsInactiveDices(7);
-                        modelGame.resetFlag();
-                    }else if (modelGame.getFlag()==1 && modelGame.getFlagsInactiveDices()[7]==1) {
-                        faces[7] = modelGame.meeplePower(faces[7]);
-                        imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[7] + ".png"));
-                        dice8.setIcon(imageIcon);
-                        modelGame.resetFlag();
-                    } else if (modelGame.getFlag()==0 && modelGame.getFlagsInactiveDices()[7]==1 && faces[7] != "Dragon" && faces[7] != "Point") {
-                        panelActive.remove(dice8);
-                        panelUsed.add(dice8);
-                        JOptionPane.showMessageDialog(null,modelGame.getStateToString(faces[7]));
-                        modelGame.activeToUsed(faces[7]);
-                        modelGame.setFlagsUsedDices(7);
-                    }else if (modelGame.getFlag()==3 && modelGame.getFlagsInactiveDices()[7]==1) {
-                        modelGame.rocketPower(faces[7]);
-                        panelActive.remove(dice8);
-                        panelInactive.add(dice8);
-                        modelGame.setFlagsInactiveDices(7);
-                        modelGame.resetFlag();
-                    }else if (modelGame.getFlag()==4 && modelGame.getFlagsInactiveDices()[7]==1) {
-                        if (modelGame.superHeroPower(faces[7]).length()>=10 ){
-                            JOptionPane.showMessageDialog(null,modelGame.superHeroPower(faces[7]));
-                        }else{
-                            faces[7] = modelGame.superHeroPower(faces[7]);
+                    } else if (e.getSource()== dice8 && modelGame.getFlagsUsedDices()[7]==0){
+                        if(modelGame.getFlag()==2){
+                            panelInactive.remove(dice8);
+                            faces[7] = modelGame.heartPower(faces[7]);
+                            imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[7] + ".png"));
+                            dice8.setIcon(imageIcon);
+                            panelActive.add(dice8);
+                            modelGame.setFlagsInactiveDices(7);
+                            modelGame.resetFlag();
+                        }else if (modelGame.getFlag()==1 && modelGame.getFlagsInactiveDices()[7]==1) {
+                            faces[7] = modelGame.meeplePower(faces[7]);
                             imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[7] + ".png"));
                             dice8.setIcon(imageIcon);
                             modelGame.resetFlag();
+                        } else if (modelGame.getFlag()==0 && modelGame.getFlagsInactiveDices()[7]==1 && faces[7] != "Dragon" && faces[7] != "Point") {
+                            panelActive.remove(dice8);
+                            panelUsed.add(dice8);
+                            JOptionPane.showMessageDialog(null,modelGame.getStateToString(faces[7]));
+                            modelGame.activeToUsed(faces[7]);
+                            modelGame.setFlagsUsedDices(7);
+                        }else if (modelGame.getFlag()==3 && modelGame.getFlagsInactiveDices()[7]==1) {
+                            modelGame.rocketPower(faces[7]);
+                            panelActive.remove(dice8);
+                            panelInactive.add(dice8);
+                            modelGame.setFlagsInactiveDices(7);
+                            modelGame.resetFlag();
+                        }else if (modelGame.getFlag()==4 && modelGame.getFlagsInactiveDices()[7]==1) {
+                            if (modelGame.superHeroPower(faces[7]).length()>=10 ){
+                                JOptionPane.showMessageDialog(null,modelGame.superHeroPower(faces[7]));
+                            }else{
+                                faces[7] = modelGame.superHeroPower(faces[7]);
+                                imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[7] + ".png"));
+                                dice8.setIcon(imageIcon);
+                                modelGame.resetFlag();
+                            }
                         }
-                    }
 
-                }else if (e.getSource()== dice9 && modelGame.getFlagsUsedDices()[8]==0){
-                    if(modelGame.getFlag()==2){
-                        panelInactive.remove(dice9);
-                        faces[8] = modelGame.heartPower(faces[8]);
-                        imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[8] + ".png"));
-                        dice9.setIcon(imageIcon);
-                        panelActive.add(dice9);
-                        modelGame.setFlagsInactiveDices(8);
-                        modelGame.resetFlag();
-                    }else if (modelGame.getFlag()==1 && modelGame.getFlagsInactiveDices()[8]==1) {
-                        faces[8] = modelGame.meeplePower(faces[8]);
-                        imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[8] + ".png"));
-                        dice9.setIcon(imageIcon);
-                        modelGame.resetFlag();
-                    }else if (modelGame.getFlag()==0 && modelGame.getFlagsInactiveDices()[8]==1 && faces[8] != "Dragon" && faces[8] != "Point") {
-                        panelActive.remove(dice9);
-                        panelUsed.add(dice9);
-                        JOptionPane.showMessageDialog(null,modelGame.getStateToString(faces[8]));
-                        modelGame.activeToUsed(faces[8]);
-                        modelGame.setFlagsUsedDices(8);
-                    }else if (modelGame.getFlag()==3 && modelGame.getFlagsInactiveDices()[8]==1) {
-                        modelGame.rocketPower(faces[8]);
-                        panelActive.remove(dice9);
-                        panelInactive.add(dice9);
-                        modelGame.setFlagsInactiveDices(8);
-                        modelGame.resetFlag();
-                    }else if (modelGame.getFlag()==4 && modelGame.getFlagsInactiveDices()[8]==1) {
-                        if (modelGame.superHeroPower(faces[8]).length()>=10 ){
-                            JOptionPane.showMessageDialog(null,modelGame.superHeroPower(faces[8]));
-                        }else{
-                            faces[8] = modelGame.superHeroPower(faces[8]);
+                    }else if (e.getSource()== dice9 && modelGame.getFlagsUsedDices()[8]==0){
+                        if(modelGame.getFlag()==2){
+                            panelInactive.remove(dice9);
+                            faces[8] = modelGame.heartPower(faces[8]);
+                            imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[8] + ".png"));
+                            dice9.setIcon(imageIcon);
+                            panelActive.add(dice9);
+                            modelGame.setFlagsInactiveDices(8);
+                            modelGame.resetFlag();
+                        }else if (modelGame.getFlag()==1 && modelGame.getFlagsInactiveDices()[8]==1) {
+                            faces[8] = modelGame.meeplePower(faces[8]);
                             imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[8] + ".png"));
                             dice9.setIcon(imageIcon);
                             modelGame.resetFlag();
+                        }else if (modelGame.getFlag()==0 && modelGame.getFlagsInactiveDices()[8]==1 && faces[8] != "Dragon" && faces[8] != "Point") {
+                            panelActive.remove(dice9);
+                            panelUsed.add(dice9);
+                            JOptionPane.showMessageDialog(null,modelGame.getStateToString(faces[8]));
+                            modelGame.activeToUsed(faces[8]);
+                            modelGame.setFlagsUsedDices(8);
+                        }else if (modelGame.getFlag()==3 && modelGame.getFlagsInactiveDices()[8]==1) {
+                            modelGame.rocketPower(faces[8]);
+                            panelActive.remove(dice9);
+                            panelInactive.add(dice9);
+                            modelGame.setFlagsInactiveDices(8);
+                            modelGame.resetFlag();
+                        }else if (modelGame.getFlag()==4 && modelGame.getFlagsInactiveDices()[8]==1) {
+                            if (modelGame.superHeroPower(faces[8]).length()>=10 ){
+                                JOptionPane.showMessageDialog(null,modelGame.superHeroPower(faces[8]));
+                            }else{
+                                faces[8] = modelGame.superHeroPower(faces[8]);
+                                imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[8] + ".png"));
+                                dice9.setIcon(imageIcon);
+                                modelGame.resetFlag();
+                            }
                         }
-                    }
 
-                }else if (e.getSource()== dice10 && modelGame.getFlagsUsedDices()[9]==0){
-                    if(modelGame.getFlag()==2){
-                        panelInactive.remove(dice10);
-                        faces[9] = modelGame.heartPower(faces[9]);
-                        imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[9] + ".png"));
-                        dice10.setIcon(imageIcon);
-                        panelActive.add(dice10);
-                        modelGame.setFlagsInactiveDices(9);
-                        modelGame.resetFlag();
-                    }else if (modelGame.getFlag()==1 && modelGame.getFlagsInactiveDices()[9]==1) {
-                        faces[9] = modelGame.meeplePower(faces[9]);
-                        imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[9] + ".png"));
-                        dice10.setIcon(imageIcon);
-                        modelGame.resetFlag();
-                    }else if (modelGame.getFlag()==0 && modelGame.getFlagsInactiveDices()[9]==1 && faces[9] != "Dragon" && faces[9] != "Point") {
-                        panelActive.remove(dice10);
-                        panelUsed.add(dice10);
-                        JOptionPane.showMessageDialog(null,modelGame.getStateToString(faces[9]));
-                        modelGame.activeToUsed(faces[9]);
-                        modelGame.setFlagsUsedDices(9);
-                    }else if (modelGame.getFlag()==3 && modelGame.getFlagsInactiveDices()[9]==1) {
-                        modelGame.rocketPower(faces[9]);
-                        panelActive.remove(dice10);
-                        panelInactive.add(dice10);
-                        modelGame.setFlagsInactiveDices(9);
-                        modelGame.resetFlag();
-                    }else if (modelGame.getFlag()==4 && modelGame.getFlagsInactiveDices()[9]==1) {
-                        if (modelGame.superHeroPower(faces[9]).length()>=10 ){
-                            JOptionPane.showMessageDialog(null,modelGame.superHeroPower(faces[9]));
-                        }else{
-                            faces[9] = modelGame.superHeroPower(faces[9]);
+                    }else if (e.getSource()== dice10 && modelGame.getFlagsUsedDices()[9]==0){
+                        if(modelGame.getFlag()==2){
+                            panelInactive.remove(dice10);
+                            faces[9] = modelGame.heartPower(faces[9]);
+                            imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[9] + ".png"));
+                            dice10.setIcon(imageIcon);
+                            panelActive.add(dice10);
+                            modelGame.setFlagsInactiveDices(9);
+                            modelGame.resetFlag();
+                        }else if (modelGame.getFlag()==1 && modelGame.getFlagsInactiveDices()[9]==1) {
+                            faces[9] = modelGame.meeplePower(faces[9]);
                             imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[9] + ".png"));
                             dice10.setIcon(imageIcon);
                             modelGame.resetFlag();
+                        }else if (modelGame.getFlag()==0 && modelGame.getFlagsInactiveDices()[9]==1 && faces[9] != "Dragon" && faces[9] != "Point") {
+                            panelActive.remove(dice10);
+                            panelUsed.add(dice10);
+                            JOptionPane.showMessageDialog(null,modelGame.getStateToString(faces[9]));
+                            modelGame.activeToUsed(faces[9]);
+                            modelGame.setFlagsUsedDices(9);
+                        }else if (modelGame.getFlag()==3 && modelGame.getFlagsInactiveDices()[9]==1) {
+                            modelGame.rocketPower(faces[9]);
+                            panelActive.remove(dice10);
+                            panelInactive.add(dice10);
+                            modelGame.setFlagsInactiveDices(9);
+                            modelGame.resetFlag();
+                        }else if (modelGame.getFlag()==4 && modelGame.getFlagsInactiveDices()[9]==1) {
+                            if (modelGame.superHeroPower(faces[9]).length()>=10 ){
+                                JOptionPane.showMessageDialog(null,modelGame.superHeroPower(faces[9]));
+                            }else{
+                                faces[9] = modelGame.superHeroPower(faces[9]);
+                                imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[9] + ".png"));
+                                dice10.setIcon(imageIcon);
+                                modelGame.resetFlag();
+                            }
                         }
                     }
+                    System.out.println(modelGame.getArrayActiveDices());
+
+                    if (modelGame.getStateGame()==true && modelGame.getFlag() == 0){
+                        modelGame.incRound();
+                        newRound.setEnabled(true);
+                        JOptionPane.showMessageDialog(null,"Su puntaje actual es: "+ modelGame.getAcumPoints());
+                    }
+                    panelUsed.revalidate();
+                    panelUsed.repaint();
+                    panelActive.revalidate();
+                    panelActive.repaint();
+                    panelInactive.revalidate();
+                    panelInactive.repaint();
                 }
-                if (modelGame.getStateGame()==true && modelGame.getFlag() == 0){
-                    newRound.setEnabled(true);
-                }
-                panelUsed.revalidate();
-                panelUsed.repaint();
-                panelActive.revalidate();
-                panelActive.repaint();
-                panelInactive.revalidate();
-                panelInactive.repaint();
             }
         }
 

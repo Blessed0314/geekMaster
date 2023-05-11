@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public class ModelGame {
     private DadoGeek dice;
-    private int point, flag, accumulatedPoints;
+    private int point, flag, accumulatedPoints, round;
     private String stateToString;
     private String[] caras, activeDices, inactiveDices;
     private int[] flagsInactiveDices, flagsUsedDices;
@@ -24,7 +24,8 @@ public class ModelGame {
         flagsInactiveDices = new int[10];
         flagsUsedDices = new int[10];
 
-        accumulatedPoints = 0;
+
+        round = 0;
 
     }
 
@@ -32,6 +33,7 @@ public class ModelGame {
         int countDragons = RepeatStringInArray.repeatCount(activeDices,"Dragon");
         int countPoints = RepeatStringInArray.repeatCount(activeDices,"Point");
         int countSuperHero = RepeatStringInArray.repeatCount(activeDices,"SuperHero");
+        int countHeart = RepeatStringInArray.repeatCount(activeDices,"Heart");
         boolean status;
 
         if ((countPoints + countDragons) == activeDices.length || countDragons == activeDices.length){
@@ -47,10 +49,39 @@ public class ModelGame {
         } else if (countSuperHero == activeDices.length) {
             point = 0;
             status = true;
-        }else{
+        } else if (activeDices.length==0) {
+            point = 0;
+            status = true;
+        } else if (countHeart==1 && (countHeart + countPoints == activeDices.length) && inactiveDices.length==0) {
+            point = (countPoints * (countPoints + 1)) / 2;
+            accumulatedPoints = accumulatedPoints + point;
+            status = true;
+        } else {
             status = false;
         }
         return status;
+    }
+
+    public boolean getStatusRound (){
+        boolean statusRound;
+        if (accumulatedPoints >= 30 || round >= 5){
+            statusRound = true;
+        }else{
+            statusRound = false;
+        }
+        return statusRound;
+    }
+
+    public String validateGame(){
+        if(accumulatedPoints >=  30 && round <= 5){
+            return "Haz ganado, obtuviste 30 puntos o más";
+        }else{
+            return "Haz perdido, no obtuviste los puntos necesarios";
+        }
+    }
+
+    public void incRound(){
+        round++;
     }
 
     public void getActiveDices(){
@@ -86,6 +117,10 @@ public class ModelGame {
                               break;
         }
         return stateToString;
+    }
+
+    public int getAcumPoints(){
+        return accumulatedPoints;
     }
 
     public void activeToUsed (String diceGame){
@@ -193,6 +228,10 @@ public class ModelGame {
         }else{
             flagPause = true;
         }
+    }
+
+    public int getArrayActiveDices(){
+        return activeDices.length;
     }
 }
 

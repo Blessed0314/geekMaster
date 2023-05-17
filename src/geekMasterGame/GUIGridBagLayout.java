@@ -9,6 +9,7 @@ import java.util.Arrays;
 /**
  * This class is used for ...
  * @autor Christian Daniel Villegas christian.villegas@correounivalle.edu.co
+ * @autor Jean Palomino jean.palomino@correounivalle.edu.co
  * @version v.1.0.0 date:21/03/2023
  */
 public class GUIGridBagLayout extends JFrame {
@@ -176,7 +177,6 @@ public class GUIGridBagLayout extends JFrame {
         newGame.addActionListener(listener);
         newGame.setEnabled(false);
         newGame.setBackground(Color.GREEN);
-        newGame.setForeground(Color.WHITE);
         constraints.gridx = 1;
         constraints.gridy = 3;
         constraints.gridwidth = 1;
@@ -190,6 +190,7 @@ public class GUIGridBagLayout extends JFrame {
 
         stateGame = new JTextArea(15,39);
         stateGame.setBorder(BorderFactory.createTitledBorder("Estado del juego: "));
+        stateGame.setText("Presione Roll para empezar...");
         stateGame.setEditable(false);
         constraints.anchor = GridBagConstraints.EAST;
         add(stateGame, constraints);
@@ -241,6 +242,7 @@ public class GUIGridBagLayout extends JFrame {
                 imageIcon = new ImageIcon(getClass().getResource("/resources/" + faces[9] + ".png"));
                 dice10.setIcon(imageIcon);
                 modelGame.setFlagPause();
+                stateGame.setText(modelGame.getStatusText());
                 roll.setEnabled(false);
             }
             else if (e.getSource()== exit){
@@ -278,6 +280,7 @@ public class GUIGridBagLayout extends JFrame {
                 panelInactive.repaint();
 
                 modelGame.setFlagPause();
+                stateGame.setText("Presione Roll para continuar...");
                 roll.setEnabled(true);
                 newRound.setEnabled(false);
             } else if (e.getSource()==powers) {
@@ -329,6 +332,7 @@ public class GUIGridBagLayout extends JFrame {
 
                 modelGame.resetGame();
                 newGame.setEnabled(false);
+                stateGame.setText("Presione Roll para continuar...");
                 roll.setEnabled(true);
             }
         }
@@ -692,17 +696,18 @@ public class GUIGridBagLayout extends JFrame {
                 panelActive.repaint();
                 panelInactive.revalidate();
                 panelInactive.repaint();
+                stateGame.setText(modelGame.getStatusText());
 
                 if (modelGame.getStateGame()==true){
-
                     modelGame.setScore();
                     modelGame.incRound();
-                    System.out.println(modelGame.getStatusRound());
                     if (modelGame.getStatusRound() == 5){
                         String stateFinal = modelGame.validateGame();
                         JOptionPane.showMessageDialog(null,stateFinal + ", Presione New Game para jugar nuevamente o Exit");
+                        stateGame.setText(modelGame.getStatusText());
                         newGame.setEnabled(true);
-                    }else{
+                    }else {
+                        stateGame.setText("Presione new round para continuar...");
                         newRound.setEnabled(true);
                     }
 

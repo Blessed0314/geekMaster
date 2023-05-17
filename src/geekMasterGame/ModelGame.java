@@ -4,11 +4,11 @@ import java.util.Arrays;
 
 public class ModelGame {
     private DadoGeek dice;
-    private int point, flag, accumulatedPoints, round;
+    private int point, flag, accumulatedPoints, round, countDragons, countPoints, countSuperHero, countHeart;
     private String stateToString;
     private String[] caras, activeDices, inactiveDices;
     private int[] flagsInactiveDices, flagsUsedDices;
-    private boolean flagPause;
+    private boolean flagPause, flagDragon;
 
     public ModelGame(){
         dice = new DadoGeek();
@@ -20,71 +20,101 @@ public class ModelGame {
         stateToString = "";
 
         flagPause = true;
+        flagDragon = false;
         flag = 0;
         flagsInactiveDices = new int[10];
         flagsUsedDices = new int[10];
 
-
+        accumulatedPoints = 0;
+        point = 0;
         round = 0;
 
     }
 
+    /**
+     *  Esta función determina si la ronda llego a su fin dependiendo de los dados que queden en el array de
+     *  activeDices, y de acuerdo a ello, hace el calculo de puntos de la ronda o resetea los puntos acumulados
+     * @return
+     */
     public boolean getStateGame(){
-        int countDragons = RepeatStringInArray.repeatCount(activeDices,"Dragon");
-        int countPoints = RepeatStringInArray.repeatCount(activeDices,"Point");
-        int countSuperHero = RepeatStringInArray.repeatCount(activeDices,"SuperHero");
-        int countHeart = RepeatStringInArray.repeatCount(activeDices,"Heart");
-        boolean status;
+        countDragons = RepeatStringInArray.repeatCount(activeDices,"Dragon");
+        countPoints = RepeatStringInArray.repeatCount(activeDices,"Point");
+        countSuperHero = RepeatStringInArray.repeatCount(activeDices,"SuperHero");
+        countHeart = RepeatStringInArray.repeatCount(activeDices,"Heart");
+        boolean status = false;
 
-        if ((countPoints + countDragons) == activeDices.length || countDragons == activeDices.length){
-            accumulatedPoints = 0;
-            status = true;
-        } else if (countPoints == activeDices.length) {
-            point = (countPoints * (countPoints + 1)) / 2;
-            accumulatedPoints += point;
-            status = true;
-        } else if (activeDices.length==1 && (activeDices[0]=="Meeple" || activeDices[0]=="Rocket" )) {
-            point = 0;
-            status = true;
-        } else if (countSuperHero == activeDices.length) {
-            point = 0;
-            status = true;
-        } else if (activeDices.length==0) {
-            point = 0;
-            status = true;
-        } else if (countHeart==1 && (countHeart + countPoints == activeDices.length) && inactiveDices.length==0) {
-            point = (countPoints * (countPoints + 1)) / 2;
-            accumulatedPoints = accumulatedPoints + point;
-            status = true;
-        } else {
-            status = false;
+        if (flag == 0){
+            if ((countDragons > 0 && (countPoints + countDragons) == activeDices.length) || countDragons == activeDices.length ){
+                flagDragon = true;
+                status = true;
+            } else if ((countPoints == activeDices.length)||(countHeart > 0 && countHeart + countPoints == activeDices.length && inactiveDices.length == 0)) {
+                point = (countPoints * (countPoints + 1)) / 2;
+                status = true;
+            } else if (activeDices.length==1 && (activeDices[0]=="Meeple" || activeDices[0]=="Rocket" )) {
+                point = 0;
+                status = true;
+            } else if ((countSuperHero == activeDices.length) || (countHeart == activeDices.length && inactiveDices.length == 0)) {
+                point = 0;
+                status = true;
+            } else if (activeDices.length==0) {
+                point = 0;
+                status = true;
+            } else if(countDragons > 0 && countHeart > 0 && countDragons + countHeart + countPoints == activeDices.length && inactiveDices.length == 0){
+                flagDragon = true;
+                status = true;
+            }
         }
         return status;
     }
 
-    public boolean getStatusRound (){
-        boolean statusRound;
-        if (accumulatedPoints >= 30 || round >= 5){
-            statusRound = true;
+    public void setScore(){
+        if (flagDragon == true){
+            accumulatedPoints = 0;
+            flagDragon = false;
         }else{
-            statusRound = false;
+            accumulatedPoints += point;
         }
-        return statusRound;
     }
 
+    public int getAcumPoints(){
+        return accumulatedPoints;
+    }
+
+
+    /**
+     * Determina si el jugador ganó o perdió dependiendo de los puntos obtenidos o las rondas jugadas
+     * @return
+     */
+    public int getStatusRound (){
+        return round;
+    }
+
+    public void incRound(){
+        round++;
+    }
     public String validateGame(){
-        if(accumulatedPoints >=  30 && round <= 5){
+        if(accumulatedPoints >=  30){
             return "Haz ganado, obtuviste 30 puntos o más";
         }else{
             return "Haz perdido, no obtuviste los puntos necesarios";
         }
     }
 
-    public void incRound(){
-        round++;
+    /**
+     * Resetea el modelGame a sus valores iniciales
+     */
+
+    public void resetGame(){
+        accumulatedPoints = 0;
+        point = 0;
+        round = 0;
+        flagPause = true;
+        flagDragon = false;
+        flag = 0;
     }
 
-    public void getActiveDices(){
+
+    public void newLaunch(){
         caras[0] = dice.getCara();
         caras[1] = dice.getCara();
         caras[2] = dice.getCara();
@@ -119,9 +149,6 @@ public class ModelGame {
         return stateToString;
     }
 
-    public int getAcumPoints(){
-        return accumulatedPoints;
-    }
 
     public void activeToUsed (String diceGame){
 
@@ -145,6 +172,7 @@ public class ModelGame {
     public String meeplePower(String diceGame){
         String newFace = dice.getCara();
         activeDices = ChangeStringOfArray.changeString(activeDices,diceGame,newFace);
+        flag = 0;
         return newFace;
     }
 
@@ -152,41 +180,43 @@ public class ModelGame {
         String newFace = dice.getCara();
         activeDices = PushStringToArray.pushString(activeDices,newFace);
         inactiveDices = DeleteStringOfArray.delete(inactiveDices,diceGame);
+        flag = 0;
         return newFace;
     }
 
     public void rocketPower(String diceGame){
         activeDices = DeleteStringOfArray.delete(activeDices,diceGame);
         inactiveDices = PushStringToArray.pushString(inactiveDices,diceGame);
+        flag = 0;
     }
 
     public String superHeroPower (String diceGame){
         String result = "";
         switch (diceGame){
             case "Meeple":
-                activeDices = ChangeStringOfArray.changeString(activeDices,diceGame,"Rocket");
                 result = "Rocket";
                 break;
             case "Heart":
-                activeDices = ChangeStringOfArray.changeString(activeDices,diceGame,"Point");
                 result = "Point";
                 break;
             case "Rocket":
-                activeDices = ChangeStringOfArray.changeString(activeDices,diceGame,"Meeple");
                 result = "Meeple";
                 break;
             case "Point":
-                activeDices = ChangeStringOfArray.changeString(activeDices,diceGame,"Heart");
                 result = "Heart";
                 break;
             case "Dragon":
-                activeDices = ChangeStringOfArray.changeString(activeDices,diceGame,"SuperHero");
                 result = "SuperHero";
                 break;
             case "SuperHero":
                 result = "No se puede girar otro superHero, escoge otro dado";
                 break;
         }
+        if (result.length() < 10){
+            activeDices = ChangeStringOfArray.changeString(activeDices,diceGame,result);
+            flag = 0;
+        }
+
         return result;
     }
 
@@ -194,9 +224,7 @@ public class ModelGame {
         return flag;
     }
 
-    public int resetFlag(){
-        return flag=0;
-    }
+
 
     public int[] getFlagsInactiveDices(){
         return flagsInactiveDices;
@@ -230,8 +258,8 @@ public class ModelGame {
         }
     }
 
-    public int getArrayActiveDices(){
-        return activeDices.length;
+    public String[] getArrayActiveDices(){
+        return activeDices;
     }
 }
 
